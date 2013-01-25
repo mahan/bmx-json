@@ -150,13 +150,15 @@ Type TJsonNode Extends TMap
 	
 	'very naive positive integer parser:
 	Method _parseNumber:String(tok:TStringTokenStreamer)
-		DebugLog "_parseNumber() ->"
+		'DebugLog "_parseNumber() ->"
 		
 		'Gold parser regexp base:
 		'Number = '-'?('0'|{Digit9}{Digit}*)('.'{Digit}+)?([Ee][+-]?{Digit}+)?
 		
 		
-		
+		'Working but only int parser:
+		'---8<------		
+		Rem
 		
 		Const DIGITS:String = "0123456789"
 		Local num:String = tok.previousChar()
@@ -164,34 +166,32 @@ Type TJsonNode Extends TMap
 			num:+tok.nextChar()
 		EndWhile
 		
+		EndRem
+		
+		'---8<------		
+
+		
+		
+		Local num:String = tok.previousChar()
+		
+		While "0123456789.eE+-".Contains(tok.lookAheadChar())
+			num:+tok.nextChar()
+		WEnd
+
+		Local intVal:Int = num.ToInt()
+		Local floatVal:Double = num.ToDouble()
+		
+		Const EPSILON:Double = 0.1E-6
+				
+		If Abs(floatVal - intVal) < EPSILON
+			num = String.FromInt(intVal)
+		Else
+			num = String.FromDouble(floatVal)
+		EndIf		
+		
 		'DebugLog "_parseNumber() <- :" + num
 		Return num
-		rem
-		Local c:String = tok.previousChar()
-		Local neg:Int = False
-		Local flt:Int = False
-		
-		' firstly optional minus "-"
-		If c = "-"
-			neg = True
-			c = tok.nextChar()
-		End If
-		
-		' secondly the integer part 
-		
-		If c = "0" 'only zero value is allowed to start with 0
-			Return "0"
-		EndIf
-		
 
-
-		Select tok.previousChar()
-			Case "-"
-			Case "0" ' only zero value is allowed to start with 0
-			Case "1", "2", "3", "4", "5", "6", "7", "8", "9"
-			
-		End Select
-		endrem
 	EndMethod
 	
 	Method _parseValue(tok:TStringTokenStreamer, putInKey:String)
@@ -244,7 +244,8 @@ Type TJsonNode Extends TMap
 		Return r
 	End Method
 	
-	Method getValueFromPath:String(path:String)
+	'get value from path
+	Method xPath:String(path:String)
 		'DebugLog "path: " + path
 		Local valNames:String[] = path.Split("/")
 				
@@ -253,7 +254,7 @@ Type TJsonNode Extends TMap
 			If String(ValueForKey(valNames[0]))
 				Return String(ValueForKey(valNames[0]))
 			ElseIf TJsonNode(ValueForKey(valNames[0]))
-				Return TJsonNode(ValueForKey(valNames[0])).getValueFromPath(strJoin(valNames[1..], "/"))
+				Return TJsonNode(ValueForKey(valNames[0])).xPath(strJoin(valNames[1..], "/"))
 			ElseIf Not ValueForKey(valNames[0]) ' Null
 				Return "null"
 			Else

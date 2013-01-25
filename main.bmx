@@ -24,19 +24,27 @@ Function Main()
 	
 	Local json:TJsonNode = TJsonNode.Create(s)
 
-	Print json.getValueFromPath("layers/0/data/length")
+	Print json.xPath("layers/0/data/length")
 
-	Print json.getValueFromPath("layers/0/data/0")
+	Print json.xPath("layers/0/data/0")
 	   
-	Print json.getValueFromPath("layers/0/height")
+	Print json.xPath("layers/0/height")
 
 	Local sum:Int
-	For Local i:Int = 0 Until json.getValueFromPath("layers/0/data/length").ToInt()
-		sum:+json.getValueFromPath("layers/0/data/" + i).ToInt()
+	For Local i:Int = 0 Until json.xPath("layers/0/data/length").ToInt()
+		sum:+json.xPath("layers/0/data/" + i).ToInt()
 	Next
 	
 	Print "sum: " + sum
+
 	
+	s = fileToUniString("test2.json")
+	
+	json = TJsonNode.Create(s)
+	
+	Print "float_test: " + json.xPath("float_test")
+	Print "float_test2: " + json.xPath("float_test2")
+		
 	Print "finished"
 End Function
 
