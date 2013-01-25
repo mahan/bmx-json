@@ -17,10 +17,7 @@
 '
 ' Notes(1):
 '   In some situations the parser might be more lenient than the spec, but 
-'   it should always accept correct JSON (exception see note #2).
-'
-' Notes(2):
-'   Currently the number parser is crude and only accepts positive integers. :/
+'   it should always accept correct JSON.
 '
 ' ****************************************************************************
 
@@ -148,7 +145,7 @@ Type TJsonNode Extends TMap
 		Return r
 	End Method
 	
-	'very naive positive integer parser:
+	'quite naive parser making use of bmx built in capabilities, without checking for syntax correctness.
 	Method _parseNumber:String(tok:TStringTokenStreamer)
 		'DebugLog "_parseNumber() ->"
 		
